@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Talk2Text</title>
+    <style>
+      body{
+        background-image: url("{% static 'images/tttbg.jpg' %}");
+        background-size: cover;
+        font-family: cursive; 
+        text-align: center;
+      }
+      h1{
+        
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-weight: 700;
+        font-size: 50px;
+        text-shadow:  3px 3px rebeccapurple;
+
+      }
+      input.micImg{
+        text-align: center;
+      }
+      #result{
+        background-color: rgba(26, 217, 211,.8);
+        box-sizing: content-box;
+        border-radius: 15px;
+        height: 200px;
+        width: 400px;
+        text-align: center;
+        display:flexbox;
+        margin-left:450px;
+        
+      }
+      div.head{
+        padding: 5px 0px 5px 0px;
+        line-height: 20px;
+        background-color: rgba(224, 67, 159,0.8);
+        color: aliceblue;
+        text-shadow: 1px 1px black;
+      }
+      img.downarrow{
+      padding-left: 3px;
+      padding-right: 3px;
+      }
+      input{
+        margin-top: 20px;
+      }
+      input.micImg{
+        background-image: url("{% static 'images/microphone.png' %}");
+        background-size: contain;
+        height: 100px;
+        width: 100px;
+        border-radius: 250px;
+        cursor: pointer;
+      }
+      input.micImg:hover{
+        color: rgb(209, 73, 150);
+      }
+    </style>
+</head>
+<body>
+  <div class="head">
+    <h1>Talk2Text</h1>
+    <p>Talk2Text helps you to save your time in typing. It converts your audio to text.</p>
+    <a><img class="downarrow" src="{% static 'images/downarrow.png' %}" height="15px" width="15px">Press below button to record<img class="downarrow" src="{% static 'images/downarrow.png' %}" height="15px" width="15px"></a>
+  </div>  
+    {% block content %}
+    <form method="POST" >
+      {% csrf_token %}
+      <input class="micImg" type="button" method="POST" value="" onclick="submitForm()" >
+      <div id="result">
+      <p id="result1"></p>
+      <p id="output"></p>
+      </div>
+    </form>
+    {% endblock %}
+    
+<script>
+    function submitForm() {
+        fetch('/talktotext/', {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken') // get the CSRF token from a cookie
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+
+            return response.json();
+          } else {
+            return error;
+          }
+        })
+        .then(data =>{
+          document.getElementById("result1").innerHTML = data.text;
+          //var result1 = document.getElementById("result1")
+          //result1.innerHTML += data.text+" ";
+          //result1.scrollTop = result1.scrollHeight;
+        })
+        .catch(error => {
+          return error;
+        });
+      }
+      
+      function getCookie(name) {
+        // helper function to get a cookie by name
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length == 2) return parts.pop().split(";").shift();
+       
+      }
+      
+</script>
+</body>
+</html>
